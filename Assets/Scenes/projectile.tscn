@@ -1,0 +1,49 @@
+[gd_scene load_steps=8 format=3 uid="uid://d3xs26w4chhgh"]
+
+[ext_resource type="Texture2D" uid="uid://deb47ctnoo0bj" path="res://Assets/Sprites/projectile-ph.png" id="1_ijbig"]
+[ext_resource type="Script" uid="uid://dxfm6ny22l8in" path="res://Assets/Scripts/projectile.gd" id="1_yih7r"]
+[ext_resource type="Texture2D" uid="uid://bi5u8y8r7m3w5" path="res://Assets/Sprites/blast-particle-ph.png" id="2_ca7f4"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ca7f4"]
+radius = 8.0
+height = 28.0
+
+[sub_resource type="Gradient" id="Gradient_ca7f4"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.19607843, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_yih7r"]
+gradient = SubResource("Gradient_ca7f4")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3yga8"]
+particle_flag_disable_z = true
+spread = 180.0
+initial_velocity_min = 300.0
+initial_velocity_max = 300.0
+damping_min = 50.000004
+damping_max = 400.00003
+scale_min = 0.049999997
+scale_max = 0.19999999
+color_ramp = SubResource("GradientTexture1D_yih7r")
+
+[node name="RigidBody2D" type="RigidBody2D"]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_yih7r")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CapsuleShape2D_ca7f4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_ijbig")
+
+[node name="Particles" type="GPUParticles2D" parent="Sprite2D"]
+z_index = -1
+amount = 6
+texture = ExtResource("2_ca7f4")
+lifetime = 0.3
+fixed_fps = 0
+process_material = SubResource("ParticleProcessMaterial_3yga8")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

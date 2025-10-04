@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://df0wv3w0n8tla"]
+
+[ext_resource type="Script" uid="uid://duo174cmimbce" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
+[ext_resource type="Texture2D" uid="uid://bq132dol7yb6w" path="res://Assets/Sprites/icon.svg" id="1_ast1v"]
+[ext_resource type="Script" uid="uid://bgdy8strsys8q" path="res://Assets/Scripts/reticle.gd" id="3_t1xgp"]
+[ext_resource type="Texture2D" uid="uid://bmg6vx3aktp2f" path="res://Assets/Sprites/reticle-ph.png" id="4_23lac"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g5ct4"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" node_paths=PackedStringArray("reticle")]
+collision_layer = 2
+collision_mask = 189
+script = ExtResource("1_7dd06")
+reticle = NodePath("Reticle")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2.5, 2.5)
+
+[node name="Animator" type="Node2D" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Animator"]
+root_node = NodePath("../..")
+
+[node name="Sprite2D" type="Sprite2D" parent="Animator"]
+position = Vector2(-1.9073486e-06, 1.9073486e-06)
+scale = Vector2(0.15625, 0.15625)
+texture = ExtResource("1_ast1v")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_g5ct4")
+
+[node name="Reticle" type="Node2D" parent="."]
+script = ExtResource("3_t1xgp")
+
+[node name="Sprite2D" type="Sprite2D" parent="Reticle"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_23lac")

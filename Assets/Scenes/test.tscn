@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=4 uid="uid://mioyepjw3nwg"]
+
+[ext_resource type="Texture2D" uid="uid://dhrcs6wc1vd24" path="res://Assets/Sprites/tiles-1.png" id="1_3fuio"]
+[ext_resource type="PackedScene" uid="uid://df0wv3w0n8tla" path="res://Assets/Scenes/player.tscn" id="2_3fuio"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ensle"]
+texture = ExtResource("1_3fuio")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:0/0 = 0
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:1/0 = 0
+2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:2/0 = 0
+0:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:2/0 = 0
+1:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:2/0 = 0
+2:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_v3f8w"]
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 223
+sources/1 = SubResource("TileSetAtlasSource_ensle")
+
+[node name="Node2D" type="Node2D"]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." groups=["World"]]
+use_parent_material = true
+tile_map_data = PackedByteArray("AAD7/wAAAQABAAAAAAD8/wAAAQABAAAAAAD9/wAAAQABAAAAAAD+/wAAAQABAAAAAAD//wAAAQABAAAAAAAAAAAAAQABAAAAAAABAAAAAQABAAAAAAACAAAAAQABAAAAAAADAAAAAQABAAAAAAAEAAAAAQABAAAAAAD6/wAAAQABAAAAAAAFAAAAAQABAAEAAAAFAAEAAQABAAIAAAD6/wEAAQABAAIAAAD7/wEAAQABAAIAAAD8/wEAAQABAAIAAAD9/wEAAQABAAIAAAD+/wEAAQABAAIAAAD//wEAAQABAAIAAAADAAEAAQABAAIAAAAAAAEAAQABAAIAAAABAAEAAQABAAIAAAACAAEAAQABAAIAAAAEAAEAAQABAAIAAAD1/wAAAQAAAAAAAAD2/wAAAQABAAAAAAD3/wAAAQABAAAAAAD4/wAAAQABAAAAAAD5/wAAAQABAAAAAAAGAAAAAQABAAAAAAAHAAAAAQABAAAAAAAIAAAAAQABAAEAAAAJAAAAAQABAAAAAAAKAAAAAQABAAAAAAALAAAAAQACAAAAAAAFAP//AQABAAAAAAAIAP7/AQABAAAAAAAIAP//AQABAAEAAAD1/wEAAQAAAAIAAAD2/wEAAQABAAIAAAD3/wEAAQABAAIAAAD4/wEAAQABAAIAAAD5/wEAAQABAAIAAAAGAAEAAQABAAIAAAAHAAEAAQABAAIAAAAIAAEAAQABAAIAAAAJAAEAAQABAAIAAAAKAAEAAQABAAIAAAALAAEAAQACAAIAAAA=")
+tile_set = SubResource("TileSet_v3f8w")
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("2_3fuio")]
+position = Vector2(0, -10)
