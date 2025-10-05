@@ -4,6 +4,8 @@ extends	CharacterBody2D
 const SPEED	= 250.0
 const JUMP_VELOCITY	= -400.0
 const DAMPING = 40.0
+const AIR_ACCELERATION = 20.0
+const GRAPPLE_BOOST = 200.0
 
 # Prepare aiming / shooting	elements
 @export	var	reticle: Node2D
@@ -13,12 +15,23 @@ const DAMPING = 40.0
 @export	var	movement_type := MovementType.WALK
 var	grapple_point: Vector2 = Vector2.ZERO
 
+var initial_position: Vector2
+
 enum MovementType {
 	WALK,
 	SWING
 }
 
+func _ready() -> void:
+	initial_position = global_position
+
 func _physics_process(delta: float)	-> void:
+
+	if Input.is_action_just_pressed("debug_reset"):
+		global_position = initial_position
+		velocity = Vector2.ZERO
+		movement_type = MovementType.WALK
+		grapple_line.retract(delta)
 
 	if movement_type == MovementType.WALK:
 		# Add the gravity.
@@ -34,7 +47,10 @@ func _physics_process(delta: float)	-> void:
 		var	direction := Input.get_axis("move_left", "move_right")
 		if direction:
 			if abs(velocity.x) < abs(direction * SPEED)	|| sign(velocity.x)	!= sign(direction):
-				velocity.x = direction * SPEED
+				if is_on_floor():
+					velocity.x = direction * SPEED
+				else:
+					velocity.x = move_toward(velocity.x, direction * SPEED, AIR_ACCELERATION)
 		else:
 			velocity.x = move_toward(velocity.x, 0, DAMPING)
 
@@ -47,6 +63,9 @@ func _physics_process(delta: float)	-> void:
 		var	tangential_velocity	:= velocity.dot(tangent_vector)
 		# Apply	gravity	to the tangential velocity
 		tangential_velocity	+= get_gravity().dot(tangent_vector) * delta
+		# Apply	grapple boost	if the player is holding left/right
+		var	input_direction := Input.get_axis("move_left", "move_right")
+		tangential_velocity += input_direction * GRAPPLE_BOOST * delta
 
 		# Apply	tangential velocity	to the player
 		velocity = tangent_vector *	tangential_velocity
@@ -61,6 +80,13 @@ func _physics_process(delta: float)	-> void:
 
 	# If the grapple input is not held and the player is swinging, release the grapple.
 	if !Input.is_action_pressed("grapple") and movement_type == MovementType.SWING:
+		movement_type =	MovementType.WALK
+		grapple_line.retract(delta)
+		# Add a small boost in the direction of the current velocity
+		velocity += velocity.normalized() * GRAPPLE_BOOST * 0.2
+
+	if movement_type == MovementType.SWING && is_on_floor():
+		# If the player is swinging and touches the ground, switch to WALK mode.
 		movement_type =	MovementType.WALK
 		grapple_line.retract(delta)
 
