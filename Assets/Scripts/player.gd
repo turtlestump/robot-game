@@ -7,6 +7,7 @@ const JUMP_VELOCITY = -400.0
 # Prepare aiming / shooting elements
 @export var reticle: Node2D
 @onready var ProjectileScene: PackedScene = preload("res://Assets/Scenes/projectile.tscn")
+@onready var grapple_line: Line2D = $Grapple/Line2D
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -25,9 +26,13 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		
-	# Aiming / shooting
+	# Attack
 	if Input.is_action_just_pressed("shoot"): 
 		shoot()
+		
+	# Grapple
+	if Input.is_action_just_pressed("grapple"):
+		grapple()
 
 	move_and_slide()
 
@@ -39,3 +44,6 @@ func shoot() -> void:
 	if instance is Node2D:
 		instance.global_position = global_position
 		instance.rotation = reticle.global_position.angle_to_point(position) + PI / 2
+		
+func grapple() -> void:
+	grapple_line.fire(reticle.global_position)
