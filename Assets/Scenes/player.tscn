@@ -49,12 +49,12 @@ texture = ExtResource("4_23lac")
 
 [node name="Grapple" type="Node2D" parent="."]
 
-[node name="Sprite2D" type="Sprite2D" parent="Grapple"]
-texture = ExtResource("5_w3t24")
-
 [node name="Line2D" type="Line2D" parent="Grapple" node_paths=PackedStringArray("head")]
 material = SubResource("ShaderMaterial_lerqx")
 width = 2.5
 texture_mode = 2
 script = ExtResource("7_c3tg1")
-head = NodePath("../Sprite2D")
+head = NodePath("Sprite2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="Grapple/Line2D"]
+texture = ExtResource("5_w3t24")

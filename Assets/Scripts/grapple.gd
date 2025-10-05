@@ -7,7 +7,7 @@ extends Line2D
 
 @export var head: Sprite2D
 @export var max_length: float = 150.0
-@export var extend_speed: float = 100.0
+@export var extend_speed: float = 600.0
 @export var retract_speed: float = 1200.0
 
 var extending: bool = false
@@ -47,11 +47,14 @@ func _process(delta: float) -> void:
 		
 func extend(delta: float) -> void:
 	length += extend_speed * delta
-	to = from + direction * length
+	length = min(length, max_length)
+	
+	# update direction to pivot toward the fixed hook point
+	direction = (to - from).normalized()
 	
 	set_point_position(0, Vector2.ZERO)
 	set_point_position(1, direction * length)
-	head.global_position = to
+	head.global_position = from + direction * length
 	
 	# Check length
 	if length >= max_length:
@@ -62,11 +65,13 @@ func extend(delta: float) -> void:
 func retract(delta:float) -> void:
 	length -= retract_speed * delta
 	length = max(length, 0.0)
-	to = from + direction * length
 	
-	# set_point_position(0, Vector2.ZERO)
+	# update direction to pivot toward the fixed hook point
+	direction = (to - from).normalized()
+	
+	set_point_position(0, Vector2.ZERO)
 	set_point_position(1, direction * length)
-	head.global_position = to
+	head.global_position = from + direction * length
 	
 	if length <= 0.0:
 		visible = false
