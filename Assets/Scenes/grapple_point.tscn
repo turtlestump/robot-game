@@ -1,14 +1,33 @@
-[gd_scene load_steps=3 format=3 uid="uid://cksgwj4bysrxn"]
+[gd_scene load_steps=4 format=3 uid="uid://cksgwj4bysrxn"]
 
 [ext_resource type="Texture2D" uid="uid://osvopc8l4prn" path="res://Assets/Sprites/grapple-point-ph.png" id="1_da4dj"]
+
+[sub_resource type="GDScript" id="GDScript_da4dj"]
+script/source = "extends Area2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2ne8i"]
 radius = 29.0
 
-[node name="Area2D" type="Area2D"]
+[node name="Area2D" type="Area2D" groups=["Grapple-Point"]]
+collision_layer = 32
+collision_mask = 8
+script = SubResource("GDScript_da4dj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_2ne8i")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_da4dj")

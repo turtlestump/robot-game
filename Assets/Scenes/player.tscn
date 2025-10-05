@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://df0wv3w0n8tla"]
+[gd_scene load_steps=11 format=3 uid="uid://df0wv3w0n8tla"]
 
 [ext_resource type="Script" uid="uid://duo174cmimbce" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
 [ext_resource type="Texture2D" uid="uid://bq132dol7yb6w" path="res://Assets/Sprites/icon.svg" id="1_ast1v"]
@@ -17,6 +17,9 @@ shader_parameter/inner_color = Color(0.8, 1, 1, 1)
 shader_parameter/pulse_speed = 15.0
 shader_parameter/edge_thickness = 0.8
 shader_parameter/linger_amount = 0.7
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c3tg1"]
+radius = 6.0
 
 [node name="CharacterBody2D" type="CharacterBody2D" node_paths=PackedStringArray("reticle")]
 collision_layer = 2
@@ -54,7 +57,20 @@ material = SubResource("ShaderMaterial_lerqx")
 width = 2.5
 texture_mode = 2
 script = ExtResource("7_c3tg1")
-head = NodePath("Sprite2D")
+head = NodePath("Head")
 
-[node name="Sprite2D" type="Sprite2D" parent="Grapple/Line2D"]
+[node name="Head" type="Node2D" parent="Grapple/Line2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Grapple/Line2D/Head"]
 texture = ExtResource("5_w3t24")
+
+[node name="Area2D" type="Area2D" parent="Grapple/Line2D/Head"]
+collision_layer = 8
+collision_mask = 33
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Grapple/Line2D/Head/Area2D"]
+shape = SubResource("CircleShape2D_c3tg1")
+debug_color = Color(0.97346884, 0.112227686, 0.3088498, 0.41960785)
+
+[connection signal="area_entered" from="Grapple/Line2D/Head/Area2D" to="Grapple/Line2D" method="_on_area_2d_area_entered"]
+[connection signal="body_entered" from="Grapple/Line2D/Head/Area2D" to="Grapple/Line2D" method="_on_area_2d_body_entered"]

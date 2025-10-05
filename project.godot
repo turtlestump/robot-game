@@ -18,6 +18,7 @@ config/icon="res://Assets/Sprites/icon.svg"
 [global_group]
 
 World=""
+Grapple-Point=""
 
 [input]
 

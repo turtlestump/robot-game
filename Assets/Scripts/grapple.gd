@@ -1,14 +1,10 @@
 extends Line2D
 
-# Update points according to position
-# Max length
-# Check collision with trigger
-# Retract grapple line
-
-@export var head: Sprite2D
+@export var head: Node2D
 @export var max_length: float = 150.0
 @export var extend_speed: float = 600.0
 @export var retract_speed: float = 1200.0
+var grapple_point: Area2D = null
 
 var extending: bool = false
 var retracting: bool = false
@@ -42,6 +38,8 @@ func _process(delta: float) -> void:
 		extend(delta)
 	elif retracting:
 		retract(delta)
+	if grapple_point != null:
+		head.global_position = grapple_point.global_position
 		
 	from = global_position
 		
@@ -76,3 +74,16 @@ func retract(delta:float) -> void:
 	if length <= 0.0:
 		visible = false
 		head.visible = false
+
+func _on_area_2d_area_entered(area: Area2D) -> void:
+	if area.is_in_group("Grapple-Point"):
+		extending = false
+		retracting = false
+		head.global_position = area.global_position
+		
+		grapple_point = area
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.is_in_group("World"):
+		extending = false
+		retracting = true

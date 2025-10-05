@@ -26,6 +26,8 @@ scale_max = 0.19999999
 color_ramp = SubResource("GradientTexture1D_yih7r")
 
 [node name="Area2D" type="Area2D"]
+collision_layer = 8
+collision_mask = 7
 script = ExtResource("1_yih7r")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
