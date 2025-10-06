@@ -43,6 +43,10 @@ texture = ExtResource("1_ast1v")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_g5ct4")
 
+[node name="DetectionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+
 [node name="Reticle" type="Node2D" parent="."]
 script = ExtResource("3_t1xgp")
 

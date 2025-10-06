@@ -19,6 +19,7 @@ config/icon="res://Assets/Sprites/icon.svg"
 
 World=""
 Grapple-Point=""
+Checkpoint=""
 
 [input]
 
