@@ -53,7 +53,13 @@ position = Vector2(1022, -110)
 position = Vector2(1417, 111)
 
 [node name="Grapple5" parent="GrapplePoints" instance=ExtResource("1_u224g")]
-position = Vector2(-977, 101)
+position = Vector2(627, -280)
+
+[node name="Grapple6" parent="GrapplePoints" instance=ExtResource("1_u224g")]
+position = Vector2(900, -287)
+
+[node name="Grapple7" parent="GrapplePoints" instance=ExtResource("1_u224g")]
+position = Vector2(1085, -493)
 
 [node name="Player" parent="." instance=ExtResource("2_3fuio")]
 position = Vector2(0, -10)
