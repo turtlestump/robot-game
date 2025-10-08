@@ -8,9 +8,9 @@ const AIR_ACCELERATION = 20.0
 const GRAPPLE_BOOST = 200.0
 
 # Prepare aiming / shooting	elements
-@export	var	reticle: Node2D
 @onready var ProjectileScene: PackedScene =	preload("res://Assets/Scenes/projectile.tscn")
 @onready var grapple_line: Line2D =	$Grapple/Line2D
+@export	var	reticle: Node2D
 
 @export	var	movement_type := MovementType.WALK
 var	grapple_point: Vector2 = Vector2.ZERO

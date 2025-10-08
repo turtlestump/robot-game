@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=4 uid="uid://mioyepjw3nwg"]
+[gd_scene load_steps=7 format=4 uid="uid://mioyepjw3nwg"]
 
 [ext_resource type="Texture2D" uid="uid://dhrcs6wc1vd24" path="res://Assets/Sprites/tiles-1.png" id="1_3fuio"]
 [ext_resource type="PackedScene" uid="uid://cksgwj4bysrxn" path="res://Assets/Scenes/grapple_point.tscn" id="1_u224g"]
 [ext_resource type="PackedScene" uid="uid://df0wv3w0n8tla" path="res://Assets/Scenes/player.tscn" id="2_3fuio"]
+[ext_resource type="PackedScene" uid="uid://bsm20tffgvai4" path="res://Assets/Scenes/scavenger.tscn" id="4_uohsq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ensle"]
 texture = ExtResource("1_3fuio")
@@ -56,3 +57,10 @@ position = Vector2(-977, 101)
 
 [node name="Player" parent="." instance=ExtResource("2_3fuio")]
 position = Vector2(0, -10)
+
+[node name="Scavenger" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_uohsq")]
+position = Vector2(113, -75)
+player = NodePath("../Player")
+hover_amplitude = 4.0
+hover_frequency = 2.0
+attack_interval = 2.0

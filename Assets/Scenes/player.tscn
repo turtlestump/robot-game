@@ -63,7 +63,7 @@ texture_mode = 2
 script = ExtResource("7_c3tg1")
 head = NodePath("Head")
 max_length = 200.0
-extend_speed = 800.0
+extend_speed = 1000.0
 
 [node name="Head" type="Node2D" parent="Grapple/Line2D"]
 
