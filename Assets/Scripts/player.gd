@@ -31,8 +31,8 @@ func _physics_process(delta: float)	-> void:
 		global_position	= initial_position
 		velocity = Vector2.ZERO
 		movement_type =	MovementType.WALK
-		grapple_line.retract(delta)
-		print("Player reset to initial position.")
+		grapple_line.begin_retract()
+		print("Player reset	to initial position.")
 
 	if movement_type == MovementType.WALK:
 		# Add the gravity.
@@ -72,28 +72,28 @@ func _physics_process(delta: float)	-> void:
 		velocity = tangent_vector *	tangential_velocity
 		
 	# Attack
-	if Input.is_action_just_pressed("shoot"): 
+	if Input.is_action_just_pressed("shoot"):
 		shoot()
 		
 	# Grapple
 	if Input.is_action_just_pressed("grapple"):
-		grapple()
+		grapple_line.fire(reticle.global_position)
 
-	if !Input.is_action_pressed("grapple"):
-		grapple_line.retract(delta)
+	if Input.is_action_just_released("grapple"):
+		grapple_line.begin_retract()
 
 	# If the grapple input is not held and the player is swinging, release the grapple.
 	if !Input.is_action_pressed("grapple") and movement_type == MovementType.SWING:
 		movement_type =	MovementType.WALK
-		grapple_line.retracting = true
+		grapple_line.begin_retract()
 		# Add a	small boost	in the direction of the	current	velocity
 		velocity += velocity.normalized() *	GRAPPLE_BOOST *	0.2
 
 	if movement_type == MovementType.SWING && is_on_floor():
 		# If the player	is swinging	and	touches	the	ground,	switch to WALK mode.
-		print("Landed while swinging, switching to WALK mode.")
+		print("Landed while	swinging, switching	to WALK	mode.")
 		movement_type =	MovementType.WALK
-		grapple_line.retracting = true
+		grapple_line.begin_retract()
 
 	move_and_slide()
 
@@ -105,11 +105,12 @@ func shoot() -> void:
 	if instance	is Node2D:
 		instance.global_position = global_position
 		instance.rotation =	reticle.global_position.angle_to_point(position) + PI /	2
-		
-func grapple() -> void:
-	grapple_line.fire(reticle.global_position)
 
 
 func _on_grappled(center_point:	Vector2) -> void:
+	if is_on_floor():
+		# Don’t	allow a	latched	state on ground; retract right away
+		grapple_line.begin_retract()
+		return
 	movement_type =	MovementType.SWING
 	grapple_point =	center_point
