@@ -1,20 +1,22 @@
 extends	CharacterBody2D
 
-
+# Player statistics
 const SPEED	= 250.0
 const JUMP_VELOCITY	= -400.0
 const DAMPING =	40.0
 const AIR_ACCELERATION = 20.0
 const GRAPPLE_BOOST	= 200.0
 
+@export var max_health = 6.0
+
 # Prepare aiming / shooting	elements
 @onready var ProjectileScene: PackedScene =	preload("res://Assets/Scenes/projectile.tscn")
 @onready var grapple_line: Line2D =	$Grapple/Line2D
 @export	var	reticle: Node2D
 
+# Prepare grappling elements
 @export	var	movement_type := MovementType.WALK
 var	grapple_point: Vector2 = Vector2.ZERO
-
 var	initial_position: Vector2
 
 enum MovementType {
@@ -26,7 +28,6 @@ func _ready() -> void:
 	initial_position = global_position
 
 func _physics_process(delta: float)	-> void:
-
 	if Input.is_action_just_pressed("debug_reset"):
 		global_position	= initial_position
 		velocity = Vector2.ZERO

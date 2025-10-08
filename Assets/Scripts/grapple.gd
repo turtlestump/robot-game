@@ -2,15 +2,18 @@ extends Line2D
 
 signal grappled(center_point: Vector2)
 
+# External references
 @export var head: Node2D
-@export var max_length: float = 150.0
-@export var extend_speed: float = 600.0
+@export var max_length: float = 200.0		# Not constants in case of later upgrades
+@export var extend_speed: float = 1000.0
 @export var retract_speed: float = 1200.0
 
+# Extension flags
 var extending := false
 var retracting := false
 var latched := false
 
+# Direction variables
 var grapple_point: Area2D = null
 var from := Vector2.ZERO
 var to := Vector2.ZERO
@@ -18,17 +21,24 @@ var direction := Vector2.RIGHT
 var length := 0.0
 
 func _ready() -> void:
+	# Ensure line is empty
 	clear_points()
+	
+	# Create start and end points
 	add_point(Vector2.ZERO)  # start (local)
 	add_point(Vector2.ZERO)  # end (local)
 	_set_visible(false)
+	
 	if is_instance_valid(head):
 		head.top_level = true  # so we can place it in world space cleanly
 
 func fire(target_position: Vector2) -> void:
+	# Define start and end positions
 	from = global_position
 	to = target_position
 	direction = (to - from).normalized()
+	
+	# Set flags
 	length = 0.0
 	extending = true
 	retracting = false
@@ -43,25 +53,29 @@ func begin_retract() -> void:
 		extending = false
 		latched = false
 		grapple_point = null
-		# keep current direction so retract looks natural
 
 func _process(delta: float) -> void:
+	# Set beginning position
 	from = global_position
+	
 	if latched and is_instance_valid(grapple_point):
 		# Pin end to grapple point
 		var end_global := grapple_point.global_position
 		_draw_latched_end(end_global)
-		# keep direction/length updated so a later retract is smooth
+		
+		# Keep direction/length updated so a later retract is smooth
 		length = from.distance_to(end_global)
 		if length > 0.0:
 			direction = (end_global - from).normalized()
 		return
 
 	if extending:
+		# Specify direction of line
 		length = min(length + extend_speed * delta, max_length)
 		direction = (to - from).normalized()
 		var end_global := from + direction * length
 		_draw_unlatched_end(end_global)
+		
 		if length >= max_length:
 			# max reached without latching → start retract
 			retracting = true
