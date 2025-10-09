@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bsm20tffgvai4"]
 
-[ext_resource type="Script" uid="uid://cx4dyc5pwlaov" path="res://Assets/Scenes/scavenger.gd" id="1_j78ib"]
+[ext_resource type="Script" uid="uid://bq8ax1yjqalld" path="res://Assets/Scripts/scavenger.gd" id="1_j78ib"]
 [ext_resource type="Texture2D" uid="uid://dlfuydn2yukk0" path="res://Assets/Sprites/evil-icon.png" id="2_47del"]
 [ext_resource type="PackedScene" uid="uid://d3xs26w4chhgh" path="res://Assets/Scenes/projectile.tscn" id="2_oa6k8"]
 
