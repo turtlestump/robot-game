@@ -7,6 +7,8 @@ const DAMPING =	40.0
 const AIR_ACCELERATION = 20.0
 const GRAPPLE_BOOST	= 200.0
 
+@export var hud: CanvasLayer 
+
 @export var max_health = 6.0
 
 # Prepare aiming / shooting	elements
@@ -34,6 +36,12 @@ func _physics_process(delta: float)	-> void:
 		movement_type =	MovementType.WALK
 		grapple_line.begin_retract()
 		print("Player reset	to initial position.")
+
+	# Test damage and heal
+	if Input.is_action_just_pressed("debug_damage"):
+		_take_damage(1)
+	if Input.is_action_just_pressed("heal"):
+		_heal(1)
 
 	if movement_type == MovementType.WALK:
 		# Add the gravity.
@@ -115,3 +123,9 @@ func _on_grappled(center_point:	Vector2) -> void:
 		return
 	movement_type =	MovementType.SWING
 	grapple_point =	center_point
+
+func _take_damage(amount: int) -> void:
+	hud.remove_health(amount)
+
+func _heal(amount: int) -> void:
+	hud.add_health(amount)

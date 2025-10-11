@@ -64,8 +64,9 @@ position = Vector2(900, -287)
 [node name="Grapple7" parent="GrapplePoints" instance=ExtResource("1_u224g")]
 position = Vector2(1085, -493)
 
-[node name="Player" parent="." instance=ExtResource("2_3fuio")]
+[node name="Player" parent="." node_paths=PackedStringArray("hud") instance=ExtResource("2_3fuio")]
 position = Vector2(0, -10)
+hud = NodePath("../HUD")
 
 [node name="Scavenger" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_uohsq")]
 position = Vector2(113, -75)

@@ -1,8 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://bria7lxisyvd3"]
+[gd_scene load_steps=7 format=3 uid="uid://bria7lxisyvd3"]
 
 [ext_resource type="Shader" uid="uid://dmg1fi6pikaoi" path="res://Assets/Scripts/Shaders/hud_screw.gdshader" id="1_71ymp"]
 [ext_resource type="Script" uid="uid://vob0l1jo04nt" path="res://Assets/Scenes/hud.gd" id="1_xs5ck"]
-[ext_resource type="Texture2D" uid="uid://6vha52jgp8ck" path="res://Assets/Sprites/nut.png" id="3_x7y1r"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_th0pt"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_xs5ck"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_x7y1r"]
 shader = ExtResource("1_71ymp")
@@ -17,10 +20,6 @@ shader_parameter/scroll_speed = 0.0
 shader_parameter/transparent_margin = 0.15
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_l5nkk"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_th0pt"]
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_xs5ck"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_xs5ck")
@@ -49,6 +48,14 @@ layout_mode = 2
 [node name="Health" type="Control" parent="Root/TopBar/HBoxContainer/LeftGroup"]
 layout_mode = 2
 
+[node name="ScrewHead" type="TextureRect" parent="Root/TopBar/HBoxContainer/LeftGroup/Health"]
+self_modulate = Color(0.19215687, 0.19215687, 0.19215687, 1)
+material = SubResource("ShaderMaterial_th0pt")
+layout_mode = 0
+offset_right = 30.0
+offset_bottom = 63.0
+texture = SubResource("CanvasTexture_xs5ck")
+
 [node name="ScrewBody" type="TextureRect" parent="Root/TopBar/HBoxContainer/LeftGroup/Health"]
 material = SubResource("ShaderMaterial_x7y1r")
 layout_mode = 0
@@ -57,22 +64,6 @@ offset_top = 16.0
 offset_right = 193.0
 offset_bottom = 44.0
 texture = SubResource("CanvasTexture_l5nkk")
-
-[node name="NotchTemplate" type="TextureRect" parent="Root/TopBar/HBoxContainer/LeftGroup/Health/ScrewBody"]
-layout_mode = 0
-offset_left = -24.0
-offset_top = -15.0
-offset_right = 38.0
-offset_bottom = 47.0
-texture = ExtResource("3_x7y1r")
-
-[node name="ScrewHead" type="TextureRect" parent="Root/TopBar/HBoxContainer/LeftGroup/Health"]
-modulate = Color(0.19315353, 0.19315353, 0.19315353, 1)
-material = SubResource("ShaderMaterial_th0pt")
-layout_mode = 0
-offset_right = 30.0
-offset_bottom = 63.0
-texture = SubResource("CanvasTexture_xs5ck")
 
 [node name="RightGroup" type="HBoxContainer" parent="Root/TopBar/HBoxContainer"]
 layout_mode = 2
