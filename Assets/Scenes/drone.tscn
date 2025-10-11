@@ -1,0 +1,44 @@
+[gd_scene load_steps=8 format=3 uid="uid://bsm20tffgvai4"]
+
+[ext_resource type="Script" uid="uid://bq8ax1yjqalld" path="res://Assets/Scripts/Enemies/drone.gd" id="1_j78ib"]
+[ext_resource type="Texture2D" uid="uid://dlfuydn2yukk0" path="res://Assets/Sprites/evil-icon.png" id="2_47del"]
+[ext_resource type="PackedScene" uid="uid://d3xs26w4chhgh" path="res://Assets/Scenes/projectile.tscn" id="2_oa6k8"]
+[ext_resource type="Texture2D" uid="uid://dko2wro6jppei" path="res://Assets/Sprites/drone-shield-ph.png" id="4_cp6q3"]
+[ext_resource type="Script" uid="uid://ctbax0jgiu81o" path="res://Assets/Scripts/Enemies/drone-shield.gd" id="4_euhoy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oa6k8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_euhoy"]
+size = Vector2(28, 7)
+
+[node name="CharacterBody2D2" type="CharacterBody2D" node_paths=PackedStringArray("shield")]
+collision_layer = 4
+collision_mask = 65
+script = ExtResource("1_j78ib")
+ProjectileScene = ExtResource("2_oa6k8")
+shield = NodePath("Pivot")
+
+[node name="Animator" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Animator"]
+scale = Vector2(0.156, 0.156)
+texture = ExtResource("2_47del")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_oa6k8")
+
+[node name="Pivot" type="Node2D" parent="."]
+
+[node name="Shield" type="Area2D" parent="Pivot"]
+position = Vector2(0, -28)
+collision_layer = 4
+collision_mask = 72
+script = ExtResource("4_euhoy")
+
+[node name="Sprite2D" type="Sprite2D" parent="Pivot/Shield"]
+texture = ExtResource("4_cp6q3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/Shield"]
+shape = SubResource("RectangleShape2D_euhoy")
+
+[connection signal="area_entered" from="Pivot/Shield" to="Pivot/Shield" method="_on_area_entered"]

@@ -2,9 +2,9 @@
 
 [ext_resource type="Texture2D" uid="uid://dhrcs6wc1vd24" path="res://Assets/Sprites/tiles-1.png" id="1_3fuio"]
 [ext_resource type="PackedScene" uid="uid://cksgwj4bysrxn" path="res://Assets/Scenes/grapple_point.tscn" id="1_u224g"]
-[ext_resource type="Script" uid="uid://di4q8ec0qweb" path="res://Assets/Scripts/test_scene.gd" id="1_vkodi"]
+[ext_resource type="Script" path="res://Assets/Scripts/test_scene.gd" id="1_vkodi"]
 [ext_resource type="PackedScene" uid="uid://df0wv3w0n8tla" path="res://Assets/Scenes/player.tscn" id="2_3fuio"]
-[ext_resource type="PackedScene" uid="uid://bsm20tffgvai4" path="res://Assets/Scenes/scavenger.tscn" id="4_uohsq"]
+[ext_resource type="PackedScene" uid="uid://bsm20tffgvai4" path="res://Assets/Scenes/drone.tscn" id="4_uohsq"]
 [ext_resource type="PackedScene" uid="uid://bria7lxisyvd3" path="res://Assets/Scenes/hud.tscn" id="5_6hn8k"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ensle"]
@@ -68,10 +68,10 @@ position = Vector2(1085, -493)
 position = Vector2(0, -10)
 hud = NodePath("../HUD")
 
-[node name="Scavenger" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_uohsq")]
-position = Vector2(113, -75)
+[node name="Drone" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_uohsq")]
+position = Vector2(763, -349)
 player = NodePath("../Player")
-hover_amplitude = 4.0
+hover_amplitude = 8.0
 hover_frequency = 2.0
 attack_interval = 2.0
 

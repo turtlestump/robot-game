@@ -1,12 +1,12 @@
 [gd_scene load_steps=11 format=3 uid="uid://df0wv3w0n8tla"]
 
-[ext_resource type="Script" uid="uid://duo174cmimbce" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
+[ext_resource type="Script" uid="uid://duo174cmimbce" path="res://Assets/Scripts/Player/player.gd" id="1_7dd06"]
 [ext_resource type="Texture2D" uid="uid://bq132dol7yb6w" path="res://Assets/Sprites/icon.svg" id="1_ast1v"]
-[ext_resource type="Script" uid="uid://bgdy8strsys8q" path="res://Assets/Scripts/reticle.gd" id="3_t1xgp"]
+[ext_resource type="Script" uid="uid://bgdy8strsys8q" path="res://Assets/Scripts/Player/reticle.gd" id="3_t1xgp"]
 [ext_resource type="Texture2D" uid="uid://bmg6vx3aktp2f" path="res://Assets/Sprites/reticle-ph.png" id="4_23lac"]
 [ext_resource type="Texture2D" uid="uid://dn4jk538vv4tf" path="res://Assets/Sprites/grapple-head-ph.png" id="5_w3t24"]
 [ext_resource type="Shader" uid="uid://cw1730t13lq12" path="res://Assets/Scripts/Shaders/grapple.gdshader" id="6_c3tg1"]
-[ext_resource type="Script" uid="uid://cju1t7n2lo0yd" path="res://Assets/Scripts/grapple.gd" id="7_c3tg1"]
+[ext_resource type="Script" uid="uid://cju1t7n2lo0yd" path="res://Assets/Scripts/Player/grapple.gd" id="7_c3tg1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g5ct4"]
 

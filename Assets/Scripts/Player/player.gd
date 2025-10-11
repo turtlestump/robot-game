@@ -111,6 +111,8 @@ func shoot() -> void:
 	var	instance := ProjectileScene.instantiate()
 	get_parent().add_child(instance)
 	
+	instance.is_player = true
+	
 	if instance	is Node2D:
 		instance.global_position = global_position
 		instance.rotation =	reticle.global_position.angle_to_point(position) + PI /	2

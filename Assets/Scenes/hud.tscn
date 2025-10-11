@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bria7lxisyvd3"]
 
-[ext_resource type="Shader" uid="uid://dmg1fi6pikaoi" path="res://Assets/Scripts/Shaders/hud_screw.gdshader" id="1_71ymp"]
-[ext_resource type="Script" uid="uid://vob0l1jo04nt" path="res://Assets/Scenes/hud.gd" id="1_xs5ck"]
+[ext_resource type="Shader" path="res://Assets/Scripts/Shaders/hud_screw.gdshader" id="1_71ymp"]
+[ext_resource type="Script" uid="uid://vob0l1jo04nt" path="res://Assets/Scripts/Player/hud.gd" id="1_xs5ck"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_th0pt"]
 
@@ -23,6 +23,7 @@ shader_parameter/transparent_margin = 0.15
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_xs5ck")
+max_health = 8
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
