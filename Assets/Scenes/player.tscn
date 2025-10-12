@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://df0wv3w0n8tla"]
+[gd_scene load_steps=13 format=3 uid="uid://df0wv3w0n8tla"]
 
 [ext_resource type="Script" uid="uid://duo174cmimbce" path="res://Assets/Scripts/Player/player.gd" id="1_7dd06"]
 [ext_resource type="Texture2D" uid="uid://bq132dol7yb6w" path="res://Assets/Sprites/icon.svg" id="1_ast1v"]
+[ext_resource type="Texture2D" uid="uid://d1l702t2r8eu1" path="res://Assets/Sprites/slash-ph.png" id="3_lerqx"]
 [ext_resource type="Script" uid="uid://bgdy8strsys8q" path="res://Assets/Scripts/Player/reticle.gd" id="3_t1xgp"]
 [ext_resource type="Texture2D" uid="uid://bmg6vx3aktp2f" path="res://Assets/Sprites/reticle-ph.png" id="4_23lac"]
 [ext_resource type="Texture2D" uid="uid://dn4jk538vv4tf" path="res://Assets/Sprites/grapple-head-ph.png" id="5_w3t24"]
@@ -9,6 +10,10 @@
 [ext_resource type="Script" uid="uid://cju1t7n2lo0yd" path="res://Assets/Scripts/Player/grapple.gd" id="7_c3tg1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g5ct4"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jp3cw"]
+radius = 17.0
+height = 36.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lerqx"]
 shader = ExtResource("6_c3tg1")
@@ -21,11 +26,10 @@ shader_parameter/linger_amount = 0.7
 [sub_resource type="CircleShape2D" id="CircleShape2D_c3tg1"]
 radius = 6.0
 
-[node name="CharacterBody2D" type="CharacterBody2D" node_paths=PackedStringArray("reticle")]
+[node name="CharacterBody2D" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 189
 script = ExtResource("1_7dd06")
-reticle = NodePath("Reticle")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
@@ -41,6 +45,21 @@ texture = ExtResource("1_ast1v")
 
 [node name="WorldCollisionShape" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_g5ct4")
+
+[node name="JetBlade" type="Node2D" parent="."]
+metadata/active = false
+
+[node name="Area2D" type="Area2D" parent="JetBlade"]
+position = Vector2(0, -27)
+collision_layer = 2
+collision_mask = 128
+
+[node name="Sprite2D" type="Sprite2D" parent="JetBlade/Area2D"]
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_lerqx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="JetBlade/Area2D"]
+shape = SubResource("CapsuleShape2D_jp3cw")
 
 [node name="Grapple" type="Node2D" parent="."]
 

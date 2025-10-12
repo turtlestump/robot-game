@@ -5,16 +5,20 @@ const SPEED	= 250.0
 const JUMP_VELOCITY	= -400.0
 const DAMPING =	40.0
 const AIR_ACCELERATION = 20.0
+const MELEE_BOOST = 200.0
 const GRAPPLE_BOOST	= 200.0
 
 @export var hud: CanvasLayer 
 
 @export var max_health = 6.0
 
-# Prepare aiming / shooting	elements
+# Prepare aiming / attacking elements
 @onready var ProjectileScene: PackedScene =	preload("res://Assets/Scenes/projectile.tscn")
 @onready var grapple_line: Line2D =	$Grapple/Line2D
-@export	var	reticle: Node2D
+@onready var reticle: Node2D = $Reticle
+@onready var jet_blade: Node2D = $JetBlade
+var buffer_window := 0.12
+var buffered_attack_until := 0.0
 
 # Prepare grappling elements
 @export	var	movement_type := MovementType.WALK
@@ -28,8 +32,11 @@ enum MovementType {
 
 func _ready() -> void:
 	initial_position = global_position
+	jet_blade.visible = false
 
 func _physics_process(delta: float)	-> void:
+	var now := Time.get_ticks_msec() / 1000.0
+	
 	if Input.is_action_just_pressed("debug_reset"):
 		global_position	= initial_position
 		velocity = Vector2.ZERO
@@ -81,8 +88,8 @@ func _physics_process(delta: float)	-> void:
 		velocity = tangent_vector *	tangential_velocity
 		
 	# Attack
-	if Input.is_action_just_pressed("shoot"):
-		shoot()
+	if Input.is_action_just_pressed("attack"):
+		pass
 		
 	# Grapple
 	if Input.is_action_just_pressed("grapple"):
@@ -105,6 +112,24 @@ func _physics_process(delta: float)	-> void:
 		grapple_line.begin_retract()
 
 	move_and_slide()
+	
+func melee() -> void:
+	var attack_angle = reticle.global_position.angle_to_point(position)
+	
+	# Activate melee range
+	jet_blade.rotation = attack_angle - PI / 2
+	jet_blade.set_meta("active", true)
+	jet_blade.visible = true
+	
+	# Surge player
+	velocity += Vector2.LEFT.rotated(attack_angle) * MELEE_BOOST
+	
+	# Delay
+	await get_tree().create_timer(0.25).timeout
+	
+	# Deactivate melee range
+	jet_blade.set_meta("active", false)
+	jet_blade.visible = false
 
 func shoot() -> void:
 	# Create projectile
