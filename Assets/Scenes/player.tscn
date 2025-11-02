@@ -9,7 +9,7 @@
 [ext_resource type="Shader" uid="uid://cw1730t13lq12" path="res://Assets/Scripts/Shaders/grapple.gdshader" id="6_c3tg1"]
 [ext_resource type="Script" uid="uid://cju1t7n2lo0yd" path="res://Assets/Scripts/Player/grapple.gd" id="7_c3tg1"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_g5ct4"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_lerqx"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jp3cw"]
 radius = 17.0
@@ -44,7 +44,7 @@ scale = Vector2(0.15625, 0.15625)
 texture = ExtResource("1_ast1v")
 
 [node name="WorldCollisionShape" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_g5ct4")
+shape = SubResource("CircleShape2D_lerqx")
 
 [node name="JetBlade" type="Node2D" parent="."]
 metadata/active = false

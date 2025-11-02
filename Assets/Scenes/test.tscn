@@ -1,11 +1,23 @@
-[gd_scene load_steps=9 format=4 uid="uid://mioyepjw3nwg"]
+[gd_scene load_steps=10 format=4 uid="uid://mioyepjw3nwg"]
 
 [ext_resource type="Texture2D" uid="uid://dhrcs6wc1vd24" path="res://Assets/Sprites/tiles-1.png" id="1_3fuio"]
 [ext_resource type="PackedScene" uid="uid://cksgwj4bysrxn" path="res://Assets/Scenes/grapple_point.tscn" id="1_u224g"]
-[ext_resource type="Script" path="res://Assets/Scripts/test_scene.gd" id="1_vkodi"]
+[ext_resource type="Script" uid="uid://di4q8ec0qweb" path="res://Assets/Scripts/test_scene.gd" id="1_vkodi"]
 [ext_resource type="PackedScene" uid="uid://df0wv3w0n8tla" path="res://Assets/Scenes/player.tscn" id="2_3fuio"]
-[ext_resource type="PackedScene" uid="uid://bsm20tffgvai4" path="res://Assets/Scenes/drone.tscn" id="4_uohsq"]
+[ext_resource type="Texture2D" uid="uid://dkx0h5ntnpnvk" path="res://Assets/Sprites/tiles-2.png" id="2_dd11q"]
 [ext_resource type="PackedScene" uid="uid://bria7lxisyvd3" path="res://Assets/Scenes/hud.tscn" id="5_6hn8k"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3a22m"]
+texture = ExtResource("2_dd11q")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+2:1/0 = 0
+0:2/0 = 0
+0:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:2/0 = 0
+2:2/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ensle"]
 texture = ExtResource("1_3fuio")
@@ -32,6 +44,7 @@ texture = ExtResource("1_3fuio")
 physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 223
 sources/1 = SubResource("TileSetAtlasSource_ensle")
+sources/0 = SubResource("TileSetAtlasSource_3a22m")
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_vkodi")
@@ -67,13 +80,6 @@ position = Vector2(1085, -493)
 [node name="Player" parent="." node_paths=PackedStringArray("hud") instance=ExtResource("2_3fuio")]
 position = Vector2(0, -10)
 hud = NodePath("../HUD")
-
-[node name="Drone" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_uohsq")]
-position = Vector2(763, -349)
-player = NodePath("../Player")
-hover_amplitude = 8.0
-hover_frequency = 2.0
-attack_interval = 2.0
 
 [node name="HUD" parent="." instance=ExtResource("5_6hn8k")]
 visible = false

@@ -1,0 +1,161 @@
+[gd_scene load_steps=3 format=3 uid="uid://beakhwo8au0v3"]
+
+[ext_resource type="Texture2D" uid="uid://cbspntyjqxxi8" path="res://Assets/Sprites/player_concept_art.png" id="1_3h3lq"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_bep1p"]
+
+[node name="PlayerSkeleton" type="Node2D"]
+
+[node name="Skeleton2D" type="Skeleton2D" parent="."]
+
+[node name="Hip" type="Bone2D" parent="Skeleton2D"]
+position = Vector2(0, 104)
+
+[node name="Chest" type="Bone2D" parent="Skeleton2D/Hip"]
+position = Vector2(0, -32)
+
+[node name="Head" type="Bone2D" parent="Skeleton2D/Hip/Chest"]
+position = Vector2(-6, -47)
+
+[node name="BackShoulder" type="Bone2D" parent="Skeleton2D/Hip/Chest"]
+position = Vector2(14, -30)
+
+[node name="Elbow" type="Bone2D" parent="Skeleton2D/Hip/Chest/BackShoulder"]
+position = Vector2(0, 45)
+
+[node name="Hand" type="Bone2D" parent="Skeleton2D/Hip/Chest/BackShoulder/Elbow"]
+position = Vector2(0, 29)
+
+[node name="FrontShoulder" type="Bone2D" parent="Skeleton2D/Hip/Chest"]
+position = Vector2(-11, -30)
+
+[node name="Elbow" type="Bone2D" parent="Skeleton2D/Hip/Chest/FrontShoulder"]
+position = Vector2(0, 45)
+
+[node name="Hand" type="Bone2D" parent="Skeleton2D/Hip/Chest/FrontShoulder/Elbow"]
+position = Vector2(0, 29)
+
+[node name="FrontLeg" type="Bone2D" parent="Skeleton2D/Hip"]
+position = Vector2(-12, 2)
+
+[node name="Knee" type="Bone2D" parent="Skeleton2D/Hip/FrontLeg"]
+position = Vector2(1, 32)
+
+[node name="Ankle" type="Bone2D" parent="Skeleton2D/Hip/FrontLeg/Knee"]
+position = Vector2(-6, 26)
+
+[node name="Foot" type="Bone2D" parent="Skeleton2D/Hip/FrontLeg/Knee/Ankle"]
+position = Vector2(6, 14)
+
+[node name="BackLeg" type="Bone2D" parent="Skeleton2D/Hip"]
+position = Vector2(10, 3)
+
+[node name="Knee" type="Bone2D" parent="Skeleton2D/Hip/BackLeg"]
+position = Vector2(1, 32)
+
+[node name="Ankle" type="Bone2D" parent="Skeleton2D/Hip/BackLeg/Knee"]
+position = Vector2(-6, 26)
+
+[node name="Foot" type="Bone2D" parent="Skeleton2D/Hip/BackLeg/Knee/Ankle"]
+position = Vector2(6, 14)
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="Head" type="Sprite2D" parent="Node2D"]
+modulate = Color(0.50534403, 0.5053441, 0.50534403, 1)
+scale = Vector2(50, 50)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="BackArm" type="Node2D" parent="Node2D"]
+modulate = Color(0.14901961, 0.14901961, 0.14901961, 0.5411765)
+position = Vector2(25, -49)
+
+[node name="Shoulder" type="Sprite2D" parent="Node2D/BackArm"]
+position = Vector2(-11, 91.99998)
+scale = Vector2(22.283422, 20.856934)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="UpperArm" type="Sprite2D" parent="Node2D/BackArm"]
+position = Vector2(-11.000001, 120)
+scale = Vector2(17.393242, 31.258987)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Forearm" type="Sprite2D" parent="Node2D/BackArm"]
+position = Vector2(-11.000001, 151)
+scale = Vector2(17.393242, 28.231218)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Torso" type="Node2D" parent="Node2D"]
+modulate = Color(0.44705883, 0.44705883, 0.44705883, 0.5137255)
+
+[node name="Chest" type="Sprite2D" parent="Node2D/Torso"]
+position = Vector2(0, 104)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Chest2" type="Sprite2D" parent="Node2D/Torso"]
+position = Vector2(0, 104)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="FrontArm" type="Node2D" parent="Node2D"]
+modulate = Color(0.8, 0.8, 0.8, 0.4862745)
+position = Vector2(0, -49)
+
+[node name="Shoulder" type="Sprite2D" parent="Node2D/FrontArm"]
+position = Vector2(-11, 91.99998)
+scale = Vector2(22.283422, 20.856934)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="UpperArm" type="Sprite2D" parent="Node2D/FrontArm"]
+position = Vector2(-11.000001, 120)
+scale = Vector2(17.393242, 31.258987)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Forearm" type="Sprite2D" parent="Node2D/FrontArm"]
+position = Vector2(-11.000001, 151)
+scale = Vector2(17.393242, 28.231218)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="FrontLeg" type="Node2D" parent="Node2D"]
+modulate = Color(0.6901961, 0.6901961, 0.6901961, 0.5058824)
+
+[node name="Thigh" type="Sprite2D" parent="Node2D/FrontLeg"]
+position = Vector2(-11.000001, 120)
+scale = Vector2(21.586805, 28.907463)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Shin" type="Sprite2D" parent="Node2D/FrontLeg"]
+position = Vector2(-11.000001, 151)
+scale = Vector2(21.586805, 26.107464)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Foot" type="Sprite2D" parent="Node2D/FrontLeg"]
+position = Vector2(-11.000001, 178)
+scale = Vector2(27.813412, 21.278246)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="BackLeg" type="Node2D" parent="Node2D"]
+modulate = Color(0.1764706, 0.1764706, 0.1764706, 0.5176471)
+position = Vector2(20, 0)
+
+[node name="Thigh" type="Sprite2D" parent="Node2D/BackLeg"]
+position = Vector2(-11.000001, 120)
+scale = Vector2(21.586805, 28.907463)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Shin" type="Sprite2D" parent="Node2D/BackLeg"]
+position = Vector2(-11.000001, 151)
+scale = Vector2(21.586805, 26.107464)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="Foot" type="Sprite2D" parent="Node2D/BackLeg"]
+position = Vector2(-11.000001, 178)
+scale = Vector2(27.813412, 21.278246)
+texture = SubResource("CanvasTexture_bep1p")
+
+[node name="PlayerConceptArt" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-265, 88)
+scale = Vector2(0.1264589, 0.12645888)
+texture = ExtResource("1_3h3lq")
+region_enabled = true
+region_rect = Rect2(606.45483, 532.7003, 933.3928, 1853.307)
