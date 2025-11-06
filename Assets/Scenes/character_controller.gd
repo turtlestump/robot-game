@@ -12,6 +12,8 @@ extends RigidBody2D
 @export var accel: float = 900.0
 ## Deceleration rate when no input on ground
 @export var stop_accel: float = 140.0
+## Reverse acceleration rate when moving opposite to facing direction on ground
+@export var ground_reverse_accel: float = 1300.0
 
 @export_group("Ground adhesion & smoothing")
 ## Length of RayCast2D used to detect ground
@@ -80,6 +82,7 @@ var current_accel: Vector2 = Vector2.ZERO
 var previous_velocity: Vector2 = Vector2.ZERO
 
 var last_ground_normal: Vector2 = Vector2.UP
+var last_raw_ground_normal: Vector2 = Vector2.UP
 var was_on_ground: bool = false
 var can_jump: bool = false
 var frames_since_ground: int = 9999  ## Large so no lockout initially
@@ -111,7 +114,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	_update_jump_buffer(dt)
 
 	## Jump impulse (up the normal)
-	v = _maybe_apply_jump(v, n, on_ground)
+	v = _maybe_apply_jump(state, v, on_ground)
 
 	## Player input
 	var dir := Input.get_action_strength(ACTION_RIGHT) - Input.get_action_strength(ACTION_LEFT)
@@ -136,20 +139,27 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 ## =========================================================
 func _detect_ground(state: PhysicsDirectBodyState2D) -> Dictionary:
 	var n := Vector2.UP
+	var raw_n := Vector2.UP
 	var on_ground := false
 
 	if ground_ray:
 		ground_ray.target_position = Vector2(0, snap_dist)
 		ground_ray.enabled = true
 		if ground_ray.is_colliding():
-			n = ground_ray.get_collision_normal().normalized()
+			raw_n = ground_ray.get_collision_normal().normalized()
+			n = raw_n
 			on_ground = true
 
 	if not on_ground:
 		var cc := state.get_contact_count()
 		if cc > 0:
 			on_ground = true
-			n = _best_up_normal_from_contacts(state)
+			raw_n = _best_up_normal_from_contacts(state)
+			n = raw_n
+
+	# Update last raw normal when on ground
+	if on_ground:
+		last_raw_ground_normal = raw_n
 
 	## If we've recently jumped, force airborne regardless of ray/contacts
 	if takeoff_timer > 0.0:
@@ -186,6 +196,16 @@ func _smooth_normal(n: Vector2, dt: float, on_ground: bool) -> Vector2:
 func _tangent_from_normal(n: Vector2) -> Vector2:
 	return Vector2(-n.y, n.x).normalized()
 
+func _get_jump_normal(state: PhysicsDirectBodyState2D, on_ground: bool) -> Vector2:
+	# Prefer the instantaneous contact/ray normal at the jump moment; fallback to last raw ground normal
+	if on_ground:
+		if ground_ray and ground_ray.is_colliding():
+			return ground_ray.get_collision_normal().normalized()
+		var cc := state.get_contact_count()
+		if cc > 0:
+			return _best_up_normal_from_contacts(state)
+	return last_raw_ground_normal
+
 ## =========================================================
 ## ===  Jumping & ground-state tracking  ===
 ## =========================================================
@@ -213,13 +233,15 @@ func _update_takeoff_timer(dt: float) -> void:
 	if takeoff_timer > 0.0:
 		takeoff_timer = maxf(takeoff_timer - dt, 0.0)
 
-func _maybe_apply_jump(v: Vector2, n: Vector2, on_ground: bool) -> Vector2:
+func _maybe_apply_jump(state: PhysicsDirectBodyState2D, v: Vector2, on_ground: bool) -> Vector2:
 	## Consume buffered jump if available and jumping is permitted (grounded or within coyote time)
 	if can_jump and (on_ground or coyote_time_left > 0.0) and jump_buffer_left > 0.0:
-		var vn := v.dot(n)
-		var desired_vn := jump_speed      ## Launch upward along +normal
+		var jn := _get_jump_normal(state, on_ground) # use unsmoothed, instantaneous surface normal
+		jn = jn.normalized()
+		var vn := v.dot(jn)
+		var desired_vn := jump_speed      ## Launch strictly along +normal
 		var delta_vn := desired_vn - vn
-		v += n * delta_vn
+		v += jn * delta_vn
 		can_jump = false
 		coyote_time_left = 0.0
 		jump_buffer_left = 0.0
@@ -243,7 +265,11 @@ func _move_on_ground(state: PhysicsDirectBodyState2D, v: Vector2, n: Vector2, tn
 	var vt := v.dot(tng)
 	if absf(dir) > 0.001:
 		var target := dir * walk_speed
-		vt = move_toward(vt, target, accel * state.step)
+		var rate := accel
+		# If input is opposite the current tangent velocity, use stronger reverse ground acceleration
+		if signf(vt) != 0.0 and signf(dir) != signf(vt):
+			rate = ground_reverse_accel
+		vt = move_toward(vt, target, rate * state.step)
 	else:
 		vt = move_toward(vt, 0.0, stop_accel * state.step)
 
