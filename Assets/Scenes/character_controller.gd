@@ -1,9 +1,5 @@
 extends RigidBody2D
 
-# =========================================================
-# ===  Player Movement (Sonic-like RigidBody2D physics)  ===
-# =========================================================
-
 
 @export_group("Ground movement")
 ## Maximum horizontal ground speed (pixels/sec)
@@ -62,6 +58,12 @@ extends RigidBody2D
 @export var airborne_vn_threshold: float = 20.0
 const ACTION_JUMP := "jump"                        ## Input action name for jumping
 
+@export_group("Sticky direction")
+## Enable sticky direction across landings (keeps accel aligned to current velocity until input direction changes)
+@export var sticky_direction_enabled: bool = true
+## Minimum |speed| threshold to treat velocity sign as reliable
+@export var sticky_vt_epsilon: float = 0.5
+
 @export_group("Debug (arrows)")
 ## Velocity arrow length multiplier
 @export var arrow_scale: float = 0.1
@@ -83,12 +85,19 @@ var previous_velocity: Vector2 = Vector2.ZERO
 
 var last_ground_normal: Vector2 = Vector2.UP
 var last_raw_ground_normal: Vector2 = Vector2.UP
-var was_on_ground: bool = false
+
+## Previous-frame grounded state (updated at end of frame)
+var prev_on_ground: bool = false
+
 var can_jump: bool = false
-var frames_since_ground: int = 9999  ## Large so no lockout initially
-var coyote_time_left: float = 0.0      ## Countdown for coyote time (seconds)
-var jump_buffer_left: float = 0.0       ## Countdown for jump buffer (seconds)
-var takeoff_timer: float = 0.0           ## Timer to suppress ground detection right after jumping
+var frames_since_ground: int = 9999
+var coyote_time_left: float = 0.0
+var jump_buffer_left: float = 0.0
+var takeoff_timer: float = 0.0
+
+## Sticky direction state
+var sticky_active: bool = false          ## Whether sticky direction is currently active
+var sticky_input_sign: float = 0.0       ## Sign of input at takeoff (used to detect change)
 
 @onready var initial_position: Vector2 = global_position
 @onready var ground_ray: RayCast2D = get_node_or_null("GroundRay") ## Downward ray, mask to floor layer
@@ -99,7 +108,6 @@ var takeoff_timer: float = 0.0           ## Timer to suppress ground detection r
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	_handle_debug_reset(state)
 	var dt := state.step
-
 	var v := state.linear_velocity
 
 	_update_takeoff_timer(dt)
@@ -116,22 +124,34 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	## Jump impulse (up the normal)
 	v = _maybe_apply_jump(state, v, on_ground)
 
-	## Player input
-	var dir := Input.get_action_strength(ACTION_RIGHT) - Input.get_action_strength(ACTION_LEFT)
+	## Player input (raw)
+	var input_dir := Input.get_action_strength(ACTION_RIGHT) - Input.get_action_strength(ACTION_LEFT)
 	var tng := _tangent_from_normal(n)
+
+	## Sticky: update using a true just-left-ground transition.
+	var just_left_ground := (not on_ground) and prev_on_ground
+	_update_sticky_direction_state(just_left_ground, input_dir, v)
+
+	## Effective directions
+	var eff_dir_ground := _effective_ground_dir(v, tng, input_dir)
+	var eff_dir_air := _effective_air_dir(v, input_dir)
 
 	## Movement
 	if on_ground:
-		v = _move_on_ground(state, v, n, tng, dir)
+		v = _move_on_ground(state, v, n, tng, eff_dir_ground, input_dir)
 	else:
-		v = _move_in_air(state, v, dir)
+		v = _move_in_air(state, v, eff_dir_air)
 
-	## --- Acceleration tracking (compute BEFORE we overwrite previous_velocity) ---
+	## --- Acceleration tracking ---
 	current_accel = (v - previous_velocity) / maxf(dt, 1e-6)
 	previous_velocity = v
 
 	state.linear_velocity = v
 	current_velocity = v
+
+	## Update previous grounded state at the end
+	prev_on_ground = on_ground
+
 	queue_redraw()
 
 ## =========================================================
@@ -207,12 +227,56 @@ func _get_jump_normal(state: PhysicsDirectBodyState2D, on_ground: bool) -> Vecto
 	return last_raw_ground_normal
 
 ## =========================================================
+## ===  Sticky direction helpers  ===
+## =========================================================
+func _update_sticky_direction_state(just_left_ground: bool, input_dir: float, v: Vector2) -> void:
+	## KILL sticky when there's no input direction (requested behavior)
+	if sticky_active and absf(input_dir) <= 0.001:
+		sticky_active = false
+
+	## PREVENT re-activation right after a jump:
+	## while takeoff_timer > 0, do not allow sticky to activate on "just left ground".
+	var can_activate_sticky := sticky_direction_enabled and (takeoff_timer <= 0.0)
+
+	## Activate sticky when we JUST left the ground while holding a direction (and not in takeoff suppression)
+	if can_activate_sticky and just_left_ground and absf(input_dir) > 0.001:
+		sticky_active = true
+		sticky_input_sign = signf(input_dir)
+
+	## Unstick when the player actively changes input direction (presses nonzero opposite sign)
+	if sticky_active and absf(input_dir) > 0.001:
+		if signf(input_dir) != sticky_input_sign:
+			sticky_active = false
+
+func _effective_ground_dir(v: Vector2, tng: Vector2, input_dir: float) -> float:
+	## When sticky is active, drive along the **current tangent velocity** direction.
+	if sticky_direction_enabled and sticky_active:
+		var vt := v.dot(tng)
+		if absf(vt) >= sticky_vt_epsilon:
+			return signf(vt)
+		## Near-zero tangent speed: fall back to stored sticky sign
+		if absf(sticky_input_sign) > 0.0:
+			return sticky_input_sign
+	return input_dir
+
+func _effective_air_dir(v: Vector2, input_dir: float) -> float:
+	## Air uses world-X; reflect sticky by following current horizontal velocity sign
+	## (or the stored sticky sign if speed is tiny).
+	if sticky_direction_enabled and sticky_active:
+		var vx := v.x
+		if absf(vx) >= sticky_vt_epsilon:
+			return signf(vx)
+		if absf(sticky_input_sign) > 0.0:
+			return sticky_input_sign
+	return input_dir
+
+## =========================================================
 ## ===  Jumping & ground-state tracking  ===
 ## =========================================================
 func _update_jump_gate(on_ground: bool) -> void:
-	if on_ground and not was_on_ground:
+	## Open jump gate when we just landed
+	if on_ground and not prev_on_ground:
 		can_jump = true
-	was_on_ground = on_ground
 
 func _update_ground_frame_counter(on_ground: bool, dt: float) -> void:
 	if on_ground:
@@ -247,27 +311,31 @@ func _maybe_apply_jump(state: PhysicsDirectBodyState2D, v: Vector2, on_ground: b
 		jump_buffer_left = 0.0
 		## Start a brief takeoff suppression so rays/contacts don't keep us "grounded"
 		takeoff_timer = takeoff_suppress_time
+
+		## Disable sticky on actual jump (requested)
+		sticky_active = false
+		sticky_input_sign = 0.0
 	return v
 
 ## =========================================================
 ## ===  Movement logic  ===
 ## =========================================================
-func _move_on_ground(state: PhysicsDirectBodyState2D, v: Vector2, n: Vector2, tng: Vector2, dir: float) -> Vector2:
+func _move_on_ground(state: PhysicsDirectBodyState2D, v: Vector2, n: Vector2, tng: Vector2, eff_dir: float, input_dir: float) -> Vector2:
 	var vn := v.dot(n)
 	## Only cancel tiny upward pops when there's no active input;
 	## when the player is pushing forward we allow some upward component for "step lift".
-	if absf(dir) <= 0.001 and vn > 0.0 and vn < cancel_pop_threshold:
+	if absf(input_dir) <= 0.001 and vn > 0.0 and vn < cancel_pop_threshold:
 		v -= n * vn
 	## adhesion (minor downward bias)
 	v -= n * (stick_down_force * state.step)
 
 	## drive along tangent
 	var vt := v.dot(tng)
-	if absf(dir) > 0.001:
-		var target := dir * walk_speed
+	if absf(eff_dir) > 0.001:
+		var target := eff_dir * walk_speed
 		var rate := accel
-		# If input is opposite the current tangent velocity, use stronger reverse ground acceleration
-		if signf(vt) != 0.0 and signf(dir) != signf(vt):
+		# If effective dir opposes current tangent velocity, use stronger reverse accel
+		if signf(vt) != 0.0 and signf(eff_dir) != signf(vt):
 			rate = ground_reverse_accel
 		vt = move_toward(vt, target, rate * state.step)
 	else:
@@ -277,8 +345,8 @@ func _move_on_ground(state: PhysicsDirectBodyState2D, v: Vector2, n: Vector2, tn
 	var v_orth := v - tng * v.dot(tng)
 	var new_v := v_orth + tng * vt
 
-	## Apply additional upward (along +normal) acceleration while moving to simulate step push-off
-	if absf(dir) > 0.001:
+	## Step lift only when actually holding input (not just sticky)
+	if absf(input_dir) > 0.001:
 		var lift_scale := 1.0
 		if step_lift_scale_with_speed:
 			lift_scale = clampf(absf(vt) / maxf(walk_speed, 0.001), 0.0, 1.0)
@@ -301,7 +369,7 @@ func _move_in_air(state: PhysicsDirectBodyState2D, v: Vector2, dir: float) -> Ve
 		if signf(vx) != 0.0 and signf(dir) != signf(vx):
 			vx = move_toward(vx, 0.0, air_reverse_decel * state.step)
 		else:
-			## Unified rule: quick-boost below threshold; stop forward accel above threshold
+			## Quick-boost below threshold; no forward accel above threshold
 			if absf(vx) < air_speed_threshold:
 				var quick_target := dir * minf(air_speed_threshold, air_max)
 				vx = move_toward(vx, quick_target, air_quick_accel * state.step)
@@ -325,11 +393,18 @@ func _handle_debug_reset(state: PhysicsDirectBodyState2D) -> void:
 		state.linear_velocity = Vector2.ZERO
 		previous_velocity = Vector2.ZERO
 		current_accel = Vector2.ZERO
+		## Clear sticky on hard reset
+		sticky_active = false
+		sticky_input_sign = 0.0
+		prev_on_ground = false
 
 func _draw() -> void:
+	## Base anchor for debug drawing just above the body
+	var base := Vector2(0, -20)
+
 	## Draw velocity (red)
 	if current_velocity.length() >= 0.1:
-		var start := Vector2(0, -20)
+		var start := base
 		var end := start + current_velocity * arrow_scale
 		draw_line(start, end, arrow_color, 2.0)
 		var d := (end - start).normalized()
@@ -338,13 +413,17 @@ func _draw() -> void:
 		draw_line(end, end + side1, arrow_color, 2.0)
 		draw_line(end, end + side2, arrow_color, 2.0)
 
-	## Draw acceleration (blue) OVER the velocity line so it overlays
+	## Draw acceleration (blue)
 	if current_accel.length() >= 0.1:
-		var a_start := Vector2(0, -20)
+		var a_start := base
 		var a_end := a_start + current_accel * accel_arrow_scale
 		draw_line(a_start, a_end, accel_arrow_color, 2.0)
 		var ad := (a_end - a_start).normalized()
 		var aside1 := ad.rotated(PI * 3.0 / 4.0) * 6.0
 		var aside2 := ad.rotated(-PI * 3.0 / 4.0) * 6.0
 		draw_line(a_end, a_end + aside1, accel_arrow_color, 2.0)
-		draw_line(a_end, a_end + aside2, accel_arrow_color, 2.0)
+
+	## GREEN DOT: shows when sticky is active
+	if sticky_direction_enabled and sticky_active:
+		var dot_pos := base + Vector2(0, -12)
+		draw_circle(dot_pos, 3.0, Color(0, 1, 0))
