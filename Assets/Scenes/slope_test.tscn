@@ -55,17 +55,17 @@ position = Vector2(4082.527, -466.86792)
 script = ExtResource("2_j0twg")
 position = Vector2(3891.0332, -365.4047)
 
-[sub_resource type="Resource" id="Resource_eult3"]
-script = ExtResource("2_j0twg")
-position = Vector2(3984, 37)
-point_in = Vector2(-16, -243)
-point_out = Vector2(32, 253)
-
 [sub_resource type="Resource" id="Resource_p5bk7"]
 script = ExtResource("2_j0twg")
 position = Vector2(4432, 37)
 point_in = Vector2(0, 253)
 point_out = Vector2(16, -243)
+
+[sub_resource type="Resource" id="Resource_eult3"]
+script = ExtResource("2_j0twg")
+position = Vector2(3984, 37)
+point_in = Vector2(-16, -243)
+point_out = Vector2(32, 253)
 
 [sub_resource type="Resource" id="Resource_utik8"]
 script = ExtResource("2_j0twg")

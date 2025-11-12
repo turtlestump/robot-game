@@ -1,14 +1,68 @@
-[gd_scene load_steps=5 format=3 uid="uid://b51wjo73q70h"]
+[gd_scene load_steps=23 format=3 uid="uid://b51wjo73q70h"]
 
 [ext_resource type="Script" uid="uid://catt7hfvrk1tg" path="res://Assets/Scenes/character_controller.gd" id="1_xsm6q"]
 [ext_resource type="Texture2D" uid="uid://bq132dol7yb6w" path="res://Assets/Sprites/icon.svg" id="2_q8rb1"]
+[ext_resource type="Script" uid="uid://cmdpnjfyqyk1d" path="res://Assets/Scenes/jet_blade.gd" id="3_p7ukc"]
+[ext_resource type="Texture2D" uid="uid://d1l702t2r8eu1" path="res://Assets/Sprites/slash-ph.png" id="3_yxsl1"]
+[ext_resource type="Script" uid="uid://bgdy8strsys8q" path="res://Assets/Scripts/Player/reticle.gd" id="5_pjyhv"]
+[ext_resource type="Texture2D" uid="uid://yqsq17dyyw0v" path="res://Assets/Sprites/activation-particle.png" id="5_te4k0"]
+[ext_resource type="Texture2D" uid="uid://leskftajdoye" path="res://Assets/Sprites/activation-dot-particle.png" id="6_me380"]
+[ext_resource type="Texture2D" uid="uid://bmg6vx3aktp2f" path="res://Assets/Sprites/reticle-ph.png" id="6_te4k0"]
+[ext_resource type="AudioStream" uid="uid://cma7f0nb7mri0" path="res://Assets/SFX/jetblade_swing_0.wav" id="7_mnel5"]
+[ext_resource type="Script" uid="uid://2ppi5f33avco" path="res://Assets/Scenes/jetblade_sfx.gd" id="7_xk7yb"]
+[ext_resource type="AudioStream" uid="uid://673tyjr0b330" path="res://Assets/SFX/jetblade_swing_1.wav" id="8_oj605"]
+[ext_resource type="AudioStream" uid="uid://d2iro50v3rr4" path="res://Assets/SFX/jetblade_swing_2.wav" id="9_xk7yb"]
+[ext_resource type="AudioStream" uid="uid://culrq8oaprqfe" path="res://Assets/SFX/jetblade_swing_3.wav" id="10_m3owk"]
+[ext_resource type="AudioStream" uid="uid://d2m7lvj6guftu" path="res://Assets/SFX/jetblade_refuel.wav" id="12_m3owk"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_q8rb1"]
 friction = 0.05
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_yxsl1"]
 
-[node name="SlopeCharacter" type="RigidBody2D"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7ukc"]
+radius = 23.0
+height = 60.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_me380"]
+particle_flag_align_y = true
+particle_flag_disable_z = true
+radial_velocity_min = 199.99997
+radial_velocity_max = 299.99997
+gravity = Vector3(0, 0, 0)
+scale_min = 0.099999994
+scale_max = 0.099999994
+sub_emitter_mode = 2
+sub_emitter_amount_at_end = 1
+sub_emitter_keep_velocity = true
+
+[sub_resource type="Curve" id="Curve_me380"]
+_data = [Vector2(0, 1), 0.0, -1.4, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_kaoxb"]
+curve = SubResource("Curve_me380")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kaoxb"]
+particle_flag_disable_z = true
+radial_velocity_min = -20.000021
+radial_velocity_max = -10.000022
+gravity = Vector3(0, 0, 0)
+radial_accel_min = 59.999996
+radial_accel_max = 59.999996
+scale_min = 0.14999999
+scale_max = 0.14999999
+color = Color(1, 0.654902, 0.6, 1)
+alpha_curve = SubResource("CurveTexture_kaoxb")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_ohkr5"]
+streams_count = 4
+stream_0/stream = ExtResource("7_mnel5")
+stream_1/stream = ExtResource("8_oj605")
+stream_2/stream = ExtResource("9_xk7yb")
+stream_3/stream = ExtResource("10_m3owk")
+
+[node name="SlopeCharacter" type="RigidBody2D" node_paths=PackedStringArray("weapon")]
 collision_layer = 2
 physics_material_override = SubResource("PhysicsMaterial_q8rb1")
 can_sleep = false
@@ -23,6 +77,8 @@ air_speed_threshold = 300.0
 step_lift_accel = 800.0
 step_lift_scale_with_speed = false
 jump_speed = 520.0
+sticky_direction_enabled = false
+weapon = NodePath("JetBlade")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
@@ -32,3 +88,62 @@ shape = SubResource("CircleShape2D_yxsl1")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.14202817, 0.14202817)
 texture = ExtResource("2_q8rb1")
+
+[node name="JetBlade" type="Node2D" parent="." node_paths=PackedStringArray("reticle")]
+script = ExtResource("3_p7ukc")
+boost_amount = 600.0
+reticle = NodePath("../Reticle")
+metadata/active = false
+
+[node name="BladeArea" type="Area2D" parent="JetBlade"]
+position = Vector2(0, -27)
+collision_layer = 2
+collision_mask = 128
+
+[node name="Sprite2D" type="Sprite2D" parent="JetBlade/BladeArea"]
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_yxsl1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="JetBlade/BladeArea"]
+position = Vector2(0, 4)
+shape = SubResource("CapsuleShape2D_p7ukc")
+
+[node name="ParticleFuelIndicator" type="GPUParticles2D" parent="JetBlade"]
+emitting = false
+amount = 30
+sub_emitter = NodePath("GPUParticles2D")
+texture = ExtResource("5_te4k0")
+lifetime = 0.09999999999999999
+one_shot = true
+explosiveness = 0.6
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_me380")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="JetBlade/ParticleFuelIndicator"]
+amount = 30
+texture = ExtResource("6_me380")
+lifetime = 0.5
+explosiveness = 1.0
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_kaoxb")
+
+[node name="SFX" type="Node2D" parent="JetBlade"]
+script = ExtResource("7_xk7yb")
+
+[node name="Swing" type="AudioStreamPlayer2D" parent="JetBlade/SFX"]
+stream = SubResource("AudioStreamRandomizer_ohkr5")
+
+[node name="Refuel" type="AudioStreamPlayer2D" parent="JetBlade/SFX"]
+stream = ExtResource("12_m3owk")
+
+[node name="Reticle" type="Node2D" parent="."]
+script = ExtResource("5_pjyhv")
+
+[node name="Sprite2D" type="Sprite2D" parent="Reticle"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("6_te4k0")
+
+[connection signal="end_boost" from="JetBlade" to="." method="_on_jet_blade_end_boost"]
+[connection signal="melee_boost" from="JetBlade" to="." method="_on_jet_blade_melee_boost"]
+[connection signal="melee_boost" from="JetBlade" to="JetBlade/SFX" method="_on_jet_blade_melee_boost"]
+[connection signal="refueled" from="JetBlade" to="JetBlade/SFX" method="_on_jet_blade_refueled"]
